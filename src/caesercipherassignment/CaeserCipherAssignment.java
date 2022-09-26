@@ -43,6 +43,17 @@ public class CaeserCipherAssignment {
             } else if (option.equals("b")) {
                 System.out.print("Phrase to Brute Force: ");
                 message = Keyboard.nextLine();
+                for (int b = 1; b <= 26; b++){
+                    String[] ciphText = breakCode(message);
+                    if (b<26){
+                        //System.out.println(ciphText[b]);
+                    System.out.println("For shift of " +b+ ", decoded is: " + ciphText[b]);
+                    }
+                   else if (b==26){
+                       //System.out.println(ciphText[0]);
+                        System.out.println("For shift of " +b+ ", decoded is: " + ciphText[0]);
+                    }
+                }
 
                 //System.out.print("Please write an integer 1-3 inclusive or 'q' to quit.");
             }
@@ -79,4 +90,37 @@ public class CaeserCipherAssignment {
         }
         return ciphText;
     }
+    
+     public static String [] breakCode(String msgIn) {
+         String[] ciphText = new String [26];
+        char letter;
+        for (int b = 0; b < 26; b++){
+        
+        for (int a = 0; a < msgIn.length(); a++) {
+            letter = msgIn.charAt(a);
+
+            if (letter >= 'A' && letter <= 'Z') {
+                letter = (char) (letter + b);
+
+                if (letter > 'Z') {
+                    letter = (char) (letter + 'A' - 'Z' - 1);
+                } else if (letter < 'A') {
+                    letter = (char) (letter - 'a' + 'z' + 1);
+                }
+                ciphText[b] = ciphText[b] + letter;
+            } else if (letter >= 'a' && letter <= 'z') {
+                letter = (char) (letter + b);
+                if (letter > 'z') {
+                    letter = (char) (letter + 'a' - 'z' - 1);
+                } else if (letter < 'a') {
+                    letter = (char) (letter - 'a' + 'z' + 1);
+                }
+                ciphText[b]= ciphText[b] + letter;
+            } else {
+                ciphText[b] = ciphText[b] + letter;
+            }
+        }
+     }
+        return ciphText;
+}
 }
