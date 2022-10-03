@@ -1,27 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package caesercipherassignment;
 
 import java.util.Scanner;
 
-/**
- *
- * @author lhava
- */
 public class CaeserCipherAssignment {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         Scanner Keyboard = new Scanner(System.in);
 
         String message, option;
+        String shiftStr;
         int shift = 0;
-        boolean playAgain = true;
+        boolean playAgain = true, forcePlayAgain = false;
 
         do {
             System.out.print("Encode (e) Decode (d) BruteForce (b) Quit (q): ");
@@ -29,29 +18,75 @@ public class CaeserCipherAssignment {
             if (option.equals("q")) {
                 playAgain = false;
             } else if (option.equals("e")) {
-                System.out.print("Phrase to encode: ");
-                message = Keyboard.nextLine();
-                System.out.print("Shift right by?: ");
-                shift = Keyboard.nextInt();
-                System.out.println("Encoded is: " + encodeAndDecode(message, shift));
+                do {
+                    System.out.print("Phrase to encode: ");
+                    message = Keyboard.nextLine();
+                    if (typeVerify(message, 's') == true) {
+                        forcePlayAgain = false;
+                    } else {
+                        System.out.println("Please do not enter an empty string.");
+                        forcePlayAgain = true;
+                    }
+                } while (forcePlayAgain == true);
+                do {
+                    System.out.print("Shift right by?: ");
+                    shiftStr = Keyboard.nextLine();
+                    if (typeVerify(shiftStr, 'i') == true) {
+                        shift = Integer.parseInt(shiftStr);
+                        System.out.println("Encoded is: " + encodeAndDecode(message, shift));
+                        forcePlayAgain = false;
+                    } else {
+                        forcePlayAgain = true;
+                        System.out.println("Please write an integer 0 to 25 inclusive.");
+                    }
+                } while (forcePlayAgain == true);
             } else if (option.equals("d")) {
-                System.out.print("Phrase to decode: ");
-                message = Keyboard.nextLine();
-                System.out.print("Shift left by?: ");
-                shift = Keyboard.nextInt();
-                System.out.println("Encoded is: " + encodeAndDecode(message, shift * -1));
+                do {
+                    System.out.print("Phrase to decode: ");
+                    message = Keyboard.nextLine();
+                    if (typeVerify(message, 's') == true) {
+                        forcePlayAgain = false;
+                    } else {
+                        System.out.println("Please do not enter an empty string.");
+                        forcePlayAgain = true;
+                    }
+                } while (forcePlayAgain == true);
+
+                do {
+                    System.out.print("Shift left by?: ");
+                    shiftStr = Keyboard.nextLine();
+                    if (typeVerify(shiftStr, 'i') == true) {
+                        shift = Integer.parseInt(shiftStr);
+                        System.out.println("Decoded is: " + encodeAndDecode(message, shift * -1));
+                        forcePlayAgain = false;
+                    } else {
+                        forcePlayAgain = true;
+                        System.out.println("Please write an integer 0 to 25 inclusive.");
+                    }
+                } while (forcePlayAgain == true);
             } else if (option.equals("b")) {
-                System.out.print("Phrase to Brute Force: ");
-                message = Keyboard.nextLine();
+                do {
+                    System.out.print("Phrase to Brute Force: ");
+                    message = Keyboard.nextLine();
+                    if (typeVerify(message, 's') == true) {
+                        forcePlayAgain = false;
+                    } else {
+                        System.out.println("Please do not enter an empty string.");
+                        forcePlayAgain = true;
+                    }
+                } while (forcePlayAgain == true);
                 for (int b = 1; b <= 26; b++) {
                     String[] ciphText = bruteForce(message);
                     if (b < 26) {
                         System.out.println(ciphText[b]);
                     } else if (b == 26) {
                         System.out.println(ciphText[0]);
+                        System.out.println(ciphText[26]);
                     }
                 }
-                //System.out.print("Please write an integer 1-3 inclusive or 'q' to quit.");
+            } else if (option.equals("") || !option.equals("e") || !option.equals("d") || !option.equals("b") || !option.equals("q")) {
+                System.out.println("Please write either 'e', 'd', 'b', or 'q'.");
+                playAgain = true;
             }
         } while (playAgain == true);
 
@@ -88,11 +123,13 @@ public class CaeserCipherAssignment {
     }
 
     public static String[] bruteForce(String msgIn) {
+        int bestArray = 0, score, bestScore = 0, loc;
+        String bruteForceArray[] = new String[27];
 
-        String bruteForceArray[] = new String[26];
+        String dictionary[] = {"the ", "and ", "you ", "that ", "was ", "for ", "are ", "with", "his", "they"};
 
         for (int a = 0; a < 26; a++) {
-            String printShift = encodeAndDecode(msgIn, a);
+            String printShift = encodeAndDecode(msgIn, a * -1);
 
             if (a == 0) {
                 bruteForceArray[a] = ("Shifted right 26: " + printShift);
@@ -100,6 +137,51 @@ public class CaeserCipherAssignment {
                 bruteForceArray[a] = ("Shifted right " + a + ": " + printShift);
             }
         }
+        for (int b = 0; b < 26; b++) {
+            score = 0;
+            for (int c = 0; c < dictionary.length; c++) {
+                loc = 0;
+                while (bruteForceArray[b].toLowerCase().indexOf(dictionary[c], loc) > -1) {
+                    score++;
+                    if (score > bestScore) {
+                        bestArray = b;
+                    }
+                    loc = bruteForceArray[b].toLowerCase().indexOf(dictionary[c], loc) + dictionary[c].length();
+                }
+            }
+        }
+        if (bestArray == 0) {
+            bruteForceArray[26] = "The best decode was with key 26\nDecoded message is: " + encodeAndDecode(msgIn, 0 * -1);
+        } else {
+            bruteForceArray[26] = "The best decode was with key " + bestArray + "\nDecoded message is: " + encodeAndDecode(msgIn, bestArray * -1);
+        }
         return bruteForceArray;
+    }
+
+    public static boolean typeVerify(String token, char type) {
+        boolean verified = true;
+        if (type == 's') {
+            if (token.equals("")) {
+                verified = false;
+            } else {
+                verified = true;
+            }
+
+        } else if (type == 'i') {
+            try {
+                Integer.parseInt(token);
+                verified = true;
+            } catch (NumberFormatException e) {
+                verified = false;
+            }
+            if (verified == true) {
+                if (Integer.parseInt(token) >= 0 && Integer.parseInt(token) <= 25) {
+                    verified = true;
+                } else {
+                    verified = false;
+                }
+            }
+        }
+        return verified;
     }
 }
