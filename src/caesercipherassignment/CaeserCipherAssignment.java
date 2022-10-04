@@ -126,7 +126,8 @@ public class CaeserCipherAssignment {
         int bestArray = 0, score, bestScore = 0, loc;
         String bruteForceArray[] = new String[27];
 
-        String dictionary[] = {"the ", "and ", "you ", "that ", "was ", "for ", "are ", "with", "his", "they"};
+        String dictionary[] = {"the ", "and ", "you ", "that ", "was ", "for ", 
+            "are ", "with", "his", "they", "this", "have", "from", "what", "when"};
 
         for (int a = 0; a < 26; a++) {
             String printShift = encodeAndDecode(msgIn, a * -1);
